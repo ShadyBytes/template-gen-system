@@ -15,7 +15,6 @@ import java.util.stream.Stream;
 public class Controllers {
     @GetMapping("/healthcheck")
     String healthcheck(Model model) {
-//        return System.getProperty("user.dir");
         model.addAttribute("directory", System.getProperty("user.dir"));
         return "healthcheck";
     }
@@ -39,8 +38,10 @@ public class Controllers {
     }
 
     @PostMapping("/json")
-    @ResponseBody
-    String json(@RequestBody ShopItem ShopItem) {
-        return ShopItem.getName() + " " + ShopItem.getId() + " " + ShopItem.getPrice();
+    String json(@RequestBody ShopItem shopItem, Model model) {
+        model.addAttribute("id", shopItem.getId());
+        model.addAttribute("name", shopItem.getName());
+        model.addAttribute("price", shopItem.getPrice());
+        return "ShopItem";
     }
 }
