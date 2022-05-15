@@ -21,7 +21,7 @@ public class Controllers {
 
     @GetMapping("/logs")
     String getFile(@RequestParam String filename, Model model) {
-        Path filePath = Path.of(System.getProperty("user.dir") + "\\" + filename);//"logs.txt");
+        Path filePath = Path.of(System.getProperty("user.dir") + "\\" + filename);
         StringBuilder contentBuilder = new StringBuilder();
 
         try (Stream<String> stream
