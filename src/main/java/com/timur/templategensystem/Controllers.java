@@ -1,7 +1,7 @@
 package com.timur.templategensystem;
 
-import com.spire.doc.Document;
-import com.spire.doc.FileFormat;
+import com.spire.doc.*;
+import com.spire.doc.documents.Paragraph;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +11,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.stream.Stream;
 
 @Controller
@@ -47,11 +51,51 @@ public class Controllers {
         return "ShopItem";
     }
 
+    @GetMapping("/chart")
+    public String index(Model model) {
+        model.addAttribute("chartData", getChartData());
+        return "chart";
+    }
+
+    private List<List<Object>> getChartData() {
+        Random random = new Random();
+        return List.of(
+                List.of("Mushrooms", random.nextInt(5)),
+                List.of("Onions", random.nextInt(5)),
+                List.of("Olives", random.nextInt(5)),
+                List.of("Zucchini", random.nextInt(5)),
+                List.of("Pepperoni", random.nextInt(5))
+        );
+    }
+
     @PostMapping("/docx")
     String docx(@RequestParam String templateName, @RequestBody Cisco1941Template cisco1941Template) {
-        Document document = new Document(/*System.getProperty("user.dir") +*/ "Template.docx");
-        document.saveToFile("CreateByReplacingPlaceholder.docx", FileFormat.Docx_2013);
+        Document document = new Document(/*System.getProperty("user.dir") +*/ templateName);
 
+        Section section = document.getSections().get(0);
+        Table table = section.getTables().get(0);
+        Map<String, String> map = new HashMap<>();
+
+        map.put("id", cisco1941Template.id.toString());
+        map.put("buyer", cisco1941Template.buyer.toString());
+        map.put("quantity", String.valueOf(cisco1941Template.quantity));
+        map.put("orderAddress", cisco1941Template.orderAddress.toString());
+
+        replaceTextinTable(map, table);
+
+        document.saveToFile("CreateByReplacingPlaceholder.docx", FileFormat.Docx_2013);
         return "docxResults";
+    }
+
+    static void replaceTextinTable(Map<String, String> map, Table table) {
+        for (TableRow row : (Iterable<TableRow>) table.getRows()) {
+            for (TableCell cell : (Iterable<TableCell>) row.getCells()) {
+                for (Paragraph para : (Iterable<Paragraph>) cell.getParagraphs()) {
+                    for (Map.Entry<String, String> entry : map.entrySet()) {
+                        para.replace("${" + entry.getKey() + "}", entry.getValue(), false, true);
+                    }
+                }
+            }
+        }
     }
 }
