@@ -1,5 +1,7 @@
 package com.timur.templategensystem;
 
+import com.spire.doc.Document;
+import com.spire.doc.FileFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -43,5 +45,13 @@ public class Controllers {
         model.addAttribute("name", shopItem.getName());
         model.addAttribute("price", shopItem.getPrice());
         return "ShopItem";
+    }
+
+    @PostMapping("/docx")
+    String docx(@RequestParam String templateName, @RequestBody Cisco1941Template cisco1941Template) {
+        Document document = new Document(/*System.getProperty("user.dir") +*/ "Template.docx");
+        document.saveToFile("CreateByReplacingPlaceholder.docx", FileFormat.Docx_2013);
+
+        return "docxResults";
     }
 }
