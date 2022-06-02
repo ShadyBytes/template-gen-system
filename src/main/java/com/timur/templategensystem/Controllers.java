@@ -67,6 +67,10 @@ public class Controllers {
                 List.of("Pepperoni", random.nextInt(5))
         );
     }
+    @PostMapping("/arr")
+    String arrayController(@RequestParam(value="array") List<Integer> myArray) {
+        return "healthcheck";
+    }
 
     @PostMapping("/docx")
     String docx(@RequestParam String templateName, @RequestBody Cisco1941Template cisco1941Template) {
